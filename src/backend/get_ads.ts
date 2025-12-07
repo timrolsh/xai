@@ -24,6 +24,7 @@ export async function getAds(user_provided_product_information: string) {
     system_prompt_result["demographics"][i]["image_url"] = images[i];
   }
   await Bun.write(`ads/${slug}.json`, JSON.stringify(system_prompt_result, null, 2));
+  return system_prompt_result;
 }
 
 export async function fetchGeneratedImageUrl(image_generation_prompt: string) {
