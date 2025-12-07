@@ -1,76 +1,67 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, ExternalLink, Sparkles, FileText } from "lucide-react";
+import {useState, useEffect} from "react";
+import {motion, AnimatePresence} from "framer-motion";
+import {ArrowRight, ArrowLeft, ExternalLink, Sparkles, FileText} from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import {useRouter} from "next/router";
+import {MainStepper, SubStepIndicator} from "@/components/StudioStepper";
 
 // Animation variants
 const fadeInUp = {
-  hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
+  hidden: {opacity: 0, y: 30, filter: "blur(10px)"},
   visible: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-  },
+    transition: {duration: 0.6, ease: [0.22, 1, 0.36, 1] as const}
+  }
 };
 
 const slideInLeft = {
-  hidden: { opacity: 0, x: -40, filter: "blur(10px)" },
+  hidden: {opacity: 0, x: -40, filter: "blur(10px)"},
   visible: {
     opacity: 1,
     x: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
-  },
+    transition: {duration: 0.5, ease: [0.22, 1, 0.36, 1] as const}
+  }
 };
 
 const slideInRight = {
-  hidden: { opacity: 0, x: 40, filter: "blur(10px)" },
+  hidden: {opacity: 0, x: 40, filter: "blur(10px)"},
   visible: {
     opacity: 1,
     x: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: 0.1 },
-  },
+    transition: {duration: 0.5, ease: [0.22, 1, 0.36, 1] as const, delay: 0.1}
+  }
 };
 
 const staggerContainer = {
-  hidden: { opacity: 0 },
+  hidden: {opacity: 0},
   visible: {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
-  },
+      delayChildren: 0.2
+    }
+  }
 };
-
-// Main steps data
-const mainSteps = [
-  { id: 1, label: "Company & Goal", active: true },
-  { id: 2, label: "Audience Segments", active: false },
-  { id: 3, label: "Ads per Segment", active: false },
-  { id: 4, label: "X Personalization", active: false },
-];
 
 // Navigation Component
 function StudioNavigation() {
   return (
     <motion.nav
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.1 }}
+      initial={{opacity: 0, y: -20}}
+      animate={{opacity: 1, y: 0}}
+      transition={{duration: 0.6, delay: 0.1}}
       className="fixed top-0 left-0 right-0 z-50 py-4 bg-[rgba(12,18,34,0.7)] backdrop-blur-xl border-b border-white/10"
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="font-gothic text-xl tracking-wide text-white">
-            Grok Ads Studio
-          </span>
+          <span className="font-gothic text-xl tracking-wide text-white">Grok Ads Studio</span>
         </Link>
 
         {/* Right side */}
@@ -91,90 +82,18 @@ function StudioNavigation() {
   );
 }
 
-// Main Stepper Component
-function MainStepper() {
-  return (
-    <motion.div
-      variants={fadeInUp}
-      className="flex items-center justify-center gap-2 md:gap-4"
-    >
-      {mainSteps.map((step, index) => (
-        <div key={step.id} className="flex items-center">
-          <div
-            className={`relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              step.active
-                ? "text-white"
-                : "text-gray-500 hover:text-gray-400"
-            }`}
-          >
-            {/* Active step glow border */}
-            {step.active && (
-              <>
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-400/50" />
-                <motion.div
-                  className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-full"
-                  layoutId="activeStep"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </>
-            )}
-            <span className="relative z-10">
-              {step.id}. {step.label}
-            </span>
-          </div>
-          {index < mainSteps.length - 1 && (
-            <div className="w-8 md:w-12 h-px bg-gray-700/50 mx-1" />
-          )}
-        </div>
-      ))}
-    </motion.div>
-  );
-}
-
-// Sub-step indicator with progress dots
-function SubStepIndicator({ current, total, label }: { current: number; total: number; label: string }) {
-  return (
-    <motion.div
-      variants={fadeInUp}
-      className="flex items-center justify-center gap-3"
-    >
-      <span className="px-4 py-2 text-sm text-gray-400 bg-white/5 rounded-full border border-white/10">
-        Step {current} of {total} · {label}
-      </span>
-      {/* Progress dots */}
-      <div className="flex items-center gap-1.5">
-        {Array.from({ length: total }).map((_, i) => (
-          <div
-            key={i}
-            className={`w-2 h-2 rounded-full transition-all ${
-              i < current
-                ? "bg-cyan-400"
-                : "bg-gray-600"
-            }`}
-          />
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
 // Company Snapshot Preview Component
-function CompanySnapshot({ 
-  companyName, 
-  description, 
-  useGrokopedia 
-}: { 
-  companyName: string; 
-  description: string; 
+function CompanySnapshot({
+  companyName,
+  description,
+  useGrokopedia
+}: {
+  companyName: string;
+  description: string;
   useGrokopedia: boolean;
 }) {
   return (
-    <motion.div
-      variants={slideInRight}
-      className="glass-lighter rounded-2xl p-6 h-full"
-    >
+    <motion.div variants={slideInRight} className="glass-lighter rounded-2xl p-6 h-full">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-white">Company Snapshot</h3>
         {useGrokopedia && (
@@ -192,10 +111,10 @@ function CompanySnapshot({
           <AnimatePresence mode="wait">
             <motion.p
               key={companyName}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              transition={{ duration: 0.2 }}
+              initial={{opacity: 0, y: 5}}
+              animate={{opacity: 1, y: 0}}
+              exit={{opacity: 0, y: -5}}
+              transition={{duration: 0.2}}
               className="text-white font-medium mt-1"
             >
               {companyName || "—"}
@@ -209,10 +128,10 @@ function CompanySnapshot({
           <AnimatePresence mode="wait">
             <motion.p
               key={description.slice(0, 50)}
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              transition={{ duration: 0.2 }}
+              initial={{opacity: 0, y: 5}}
+              animate={{opacity: 1, y: 0}}
+              exit={{opacity: 0, y: -5}}
+              transition={{duration: 0.2}}
               className="text-gray-300 text-sm mt-1 leading-relaxed"
             >
               {description || "Start typing to see preview..."}
@@ -254,7 +173,7 @@ export default function CompanyDescriptionPage() {
       const savedName = localStorage.getItem("companyName");
       const savedGrokopedia = localStorage.getItem("useGrokopedia");
       const savedDescription = localStorage.getItem("companyDescription");
-      
+
       if (savedName) setCompanyName(savedName);
       if (savedGrokopedia) setUseGrokopedia(savedGrokopedia === "true");
       if (savedDescription) setDescription(savedDescription);
@@ -279,7 +198,7 @@ export default function CompanyDescriptionPage() {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2940&auto=format&fit=crop')`,
+            backgroundImage: `url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2940&auto=format&fit=crop')`
           }}
         />
         {/* Dark overlay */}
@@ -289,7 +208,7 @@ export default function CompanyDescriptionPage() {
           <div className="absolute top-0 left-1/4 w-[600px] h-[400px] bg-cyan-500/20 rounded-full blur-[120px] animate-pulse-glow" />
           <div
             className="absolute top-20 right-1/4 w-[500px] h-[350px] bg-purple-500/15 rounded-full blur-[100px] animate-pulse-glow"
-            style={{ animationDelay: "1s" }}
+            style={{animationDelay: "1s"}}
           />
         </div>
       </div>
@@ -305,16 +224,13 @@ export default function CompanyDescriptionPage() {
           className="w-full max-w-5xl flex flex-col items-center gap-6"
         >
           {/* Main Stepper */}
-          <MainStepper />
+          <MainStepper currentMainStep={1} currentSubStep={2} />
 
           {/* Sub-step indicator */}
           <SubStepIndicator current={2} total={3} label="Company description" />
 
           {/* Main Glass Card - Two Column Layout */}
-          <motion.div
-            variants={fadeInUp}
-            className="w-full glass rounded-3xl p-8 md:p-10 mt-4"
-          >
+          <motion.div variants={fadeInUp} className="w-full glass rounded-3xl p-8 md:p-10 mt-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Left Column - Description Form */}
               <motion.div variants={slideInLeft} className="space-y-6">
@@ -352,8 +268,8 @@ export default function CompanyDescriptionPage() {
                 {/* Navigation Buttons */}
                 <div className="flex items-center justify-between pt-4">
                   <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{scale: 1.02}}
+                    whileTap={{scale: 0.98}}
                     onClick={handleBack}
                     className="px-5 py-2.5 text-sm font-medium text-gray-400 hover:text-white border border-white/10 hover:border-white/20 rounded-xl flex items-center gap-2 transition-all"
                   >
@@ -362,8 +278,8 @@ export default function CompanyDescriptionPage() {
                   </motion.button>
 
                   <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{scale: 1.03}}
+                    whileTap={{scale: 0.98}}
                     onClick={handleContinue}
                     disabled={!description.trim()}
                     className={`px-6 py-3 text-sm font-semibold rounded-xl flex items-center gap-2 transition-all ${
@@ -391,4 +307,3 @@ export default function CompanyDescriptionPage() {
     </div>
   );
 }
-

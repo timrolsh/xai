@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/router";
+import {useEffect} from "react";
+import {useRouter} from "next/router";
 
 export default function StudioIndex() {
   const router = useRouter();
@@ -21,4 +21,3 @@ export default function StudioIndex() {
     </div>
   );
 }
-
