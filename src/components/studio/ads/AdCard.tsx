@@ -77,7 +77,19 @@ export function AdCard({
                 {name}
               </span>
               {verified && (
-                <BadgeCheck className="w-4 h-4 text-[#1D9BF0] fill-current" /> // X Blue
+                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#1D9BF0]">
+                  <svg
+                    className="w-3 h-3 text-white"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="4 9 7 12 12 5" />
+                  </svg>
+                </span>
               )}
               <span className="text-[15px] text-gray-500 dark:text-gray-500 truncate">
                 @{handle}

@@ -187,19 +187,11 @@ export default function PersonalizationPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto"
+              className="max-w-2xl mx-auto space-y-6"
             >
-              {/* Product Context Card */}
-              <div className="bg-white/40 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-2xl p-6 shadow-sm">
-                 <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Product Context</h3>
-                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                   {generatedAd.product_context}
-                 </p>
-              </div>
-
               {/* Ad Card */}
               <div className="space-y-6">
-                 <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0 md:text-right">Generated Creative</h3>
+                 <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider text-center">Generated Creative</h3>
                  <AdCard
                     name={name || localStorage.getItem("companyName") || "Company"}
                     handle={(name || localStorage.getItem("companyName") || "company").toLowerCase().replace(/\s+/g, '')}
@@ -214,7 +206,7 @@ export default function PersonalizationPage() {
                     }}
                   />
                   
-                  <div className="flex justify-end">
+                  <div className="flex justify-center">
                     <Button
                       onClick={handleLaunch}
                       size="lg"
