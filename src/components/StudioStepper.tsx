@@ -22,8 +22,13 @@ export function MainStepper({
   currentMainStep: number;
   currentSubStep: number;
 }) {
-  // Calculate progress percentage for the progress bar under step 1
-  const subStepProgress = currentMainStep === 1 ? (currentSubStep / 3) * 100 : 100;
+  // Calculate progress percentage for the progress bar under each step
+  // Step 1 has 3 sub-steps, others are single step (100%)
+  const getSubStepProgress = () => {
+    if (currentMainStep === 1) return (currentSubStep / 3) * 100;
+    return 100; // Full progress for steps 2, 3, 4
+  };
+  const subStepProgress = getSubStepProgress();
 
   return (
     <motion.div
