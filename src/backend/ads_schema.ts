@@ -15,5 +15,6 @@ export const AdsSchema = z.object({
         tweet_text: z.string()
       })
     )
-    .length(4)
+    .min(3)
+    .max(4)
 });

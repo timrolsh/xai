@@ -226,9 +226,10 @@ export default function CompanyGoalPage() {
     }
   }, []);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (typeof window !== "undefined") {
       localStorage.setItem("campaignGoal", goal);
+      localStorage.setItem("adsData", JSON.stringify(null)); // Clear previous data
     }
     router.push("/studio/segments");
   };

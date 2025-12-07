@@ -10,7 +10,8 @@ import {
   Users,
   Globe,
   Target,
-  Sparkles
+  Sparkles,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
 import {useRouter} from "next/router";
@@ -60,111 +61,29 @@ const slideInRight = {
   }
 };
 
-// Segment type
-interface Segment {
+// Demographic type from API
+interface Demographic {
+  header: string;
+  age_range: string;
+  gender: string;
+  geolocation: string;
+  instruction: string;
+  tweet_text: string;
+  image_url?: string;
+}
+
+// Segment type for display
+interface Segment extends Demographic {
   id: string;
-  name: string;
-  description: string;
-  ageRange: string;
-  geo: string;
-  funnelStage: string;
-  interests: string[];
   color: "cyan" | "purple" | "pink" | "emerald";
 }
 
-// Mock segments data
-const mockSegments: Segment[] = [
-  {
-    id: "1",
-    name: "Gen Z AI Builders",
-    description: "AI awareness on Gen Z AI Builders to developers, hatch new innovations.",
-    ageRange: "18-24",
-    geo: "Global",
-    funnelStage: "Awareness",
-    interests: ["AI/ML", "Coding", "Startups"],
-    color: "cyan"
-  },
-  {
-    id: "2",
-    name: "B2B Marketing Leads",
-    description: "B2B Marketing leads, to potentiators and marketing, development reads.",
-    ageRange: "25-44",
-    geo: "Global",
-    funnelStage: "Decision",
-    interests: ["SaaS", "Marketing", "Analytics"],
-    color: "purple"
-  },
-  {
-    id: "3",
-    name: "Crypto Founders",
-    description: "Nootify react our-optic products in conts and after-protocol onontag ap canvas.",
-    ageRange: "25-34",
-    geo: "Global",
-    funnelStage: "Decision",
-    interests: ["Web3", "DeFi", "NFTs"],
-    color: "pink"
-  },
-  {
-    id: "4",
-    name: "Crypto Builders",
-    description: "AI mobile grownster ads for AI note-taker and resource seutislacs.",
-    ageRange: "18-24",
-    geo: "Global",
-    funnelStage: "Awareness",
-    interests: ["Blockchain", "Smart Contracts"],
-    color: "emerald"
-  },
-  {
-    id: "5",
-    name: "SaaS Growth Hackers",
-    description: "SaaS growth hackers, for cempinst and and growth antiem testing Suite.",
-    ageRange: "18-24",
-    geo: "Global",
-    funnelStage: "Decision",
-    interests: ["Growth", "PLG", "Metrics"],
-    color: "cyan"
-  },
-  {
-    id: "6",
-    name: "DevTool Enthusiasts",
-    description: "Developers who actively seek and adopt new development tools and workflows.",
-    ageRange: "22-35",
-    geo: "US & EU",
-    funnelStage: "Consideration",
-    interests: ["DevOps", "IDE", "Productivity"],
-    color: "purple"
-  },
-  {
-    id: "7",
-    name: "Startup Founders",
-    description: "Early-stage startup founders looking for tools to accelerate growth.",
-    ageRange: "25-40",
-    geo: "Global",
-    funnelStage: "Decision",
-    interests: ["Funding", "MVP", "Scale"],
-    color: "pink"
-  },
-  {
-    id: "8",
-    name: "Enterprise CTOs",
-    description: "Technical leaders at large companies evaluating enterprise solutions.",
-    ageRange: "35-55",
-    geo: "US",
-    funnelStage: "Decision",
-    interests: ["Security", "Compliance", "Scale"],
-    color: "emerald"
-  },
-  {
-    id: "9",
-    name: "Product Managers",
-    description: "Product managers looking for AI tools to enhance product development.",
-    ageRange: "28-45",
-    geo: "Global",
-    funnelStage: "Awareness",
-    interests: ["Roadmaps", "Analytics", "UX"],
-    color: "cyan"
-  }
-];
+// Ads Data from API
+interface AdsData {
+  product_slug_snake_case: string;
+  product_context: string;
+  demographics: Demographic[];
+}
 
 // Color map for gradient borders
 const colorMap = {
@@ -189,6 +108,8 @@ const colorMap = {
     badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
   }
 };
+
+const colors: Array<"cyan" | "purple" | "pink" | "emerald"> = ["cyan", "purple", "pink", "emerald"];
 
 // Navigation Component
 function StudioNavigation() {
@@ -242,7 +163,9 @@ function SegmentCard({
     >
       {/* Gradient border wrapper */}
       <div
-        className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colors.border} opacity-${isSelected ? "100" : "50"} group-hover:opacity-100 transition-opacity duration-300`}
+        className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colors.border} opacity-${
+          isSelected ? "100" : "50"
+        } group-hover:opacity-100 transition-opacity duration-300`}
         style={{padding: "1px"}}
       />
 
@@ -272,10 +195,7 @@ function SegmentCard({
         </AnimatePresence>
 
         {/* Segment name */}
-        <h3 className="font-gothic text-xl text-white mb-2 pr-8">{segment.name}</h3>
-
-        {/* Description */}
-        <p className="text-gray-400 text-sm mb-4 line-clamp-2">{segment.description}</p>
+        <h3 className="font-gothic text-xl text-white mb-2 pr-8">{segment.header}</h3>
 
         {/* Metadata labels */}
         <div className="flex items-center gap-4 text-xs text-gray-500 mb-2">
@@ -285,32 +205,30 @@ function SegmentCard({
           </span>
           <span className="flex items-center gap-1">
             <Globe size={12} />
-            Geo
+            Location
           </span>
           <span className="flex items-center gap-1">
             <Target size={12} />
-            Funnel Stage
+            Gender
           </span>
         </div>
 
         {/* Metadata values */}
         <div className="flex items-center gap-2 flex-wrap mb-4">
           <span className="px-2 py-1 text-xs font-medium rounded-md bg-white/5 text-gray-300 border border-white/10">
-            {segment.ageRange}
+            {segment.age_range}
           </span>
           <span className="px-2 py-1 text-xs font-medium rounded-md bg-white/5 text-gray-300 border border-white/10">
-            {segment.geo}
+            {segment.geolocation}
           </span>
           <span className={`px-2 py-1 text-xs font-medium rounded-md border ${colors.badge}`}>
-            {segment.funnelStage}
+            {segment.gender}
           </span>
         </div>
 
         {/* Toggle row */}
         <div className="flex items-center justify-between pt-3 border-t border-white/10">
-          <span className="text-xs text-gray-500">
-            {isSelected ? "Selected" : "Tap to select"}
-          </span>
+          <span className="text-xs text-gray-500">{isSelected ? "Selected" : "Tap to select"}</span>
           <button
             className={`relative w-10 h-5 rounded-full transition-all duration-300 ${
               isSelected ? `bg-gradient-to-r ${colors.border}` : "bg-gray-700"
@@ -333,13 +251,7 @@ function SegmentCard({
 }
 
 // Selected Segments Sidebar
-function SelectedSidebar({
-  segments,
-  selectedIds
-}: {
-  segments: Segment[];
-  selectedIds: Set<string>;
-}) {
+function SelectedSidebar({segments, selectedIds}: {segments: Segment[]; selectedIds: Set<string>}) {
   const selectedSegments = segments.filter((s) => selectedIds.has(s.id));
 
   return (
@@ -369,9 +281,11 @@ function SelectedSidebar({
                 className="flex items-center gap-2 text-sm text-gray-300"
               >
                 <div
-                  className={`w-2 h-2 rounded-full bg-gradient-to-r ${colorMap[segment.color].border}`}
+                  className={`w-2 h-2 rounded-full bg-gradient-to-r ${
+                    colorMap[segment.color].border
+                  }`}
                 />
-                {segment.name}
+                {segment.header}
               </motion.div>
             ))}
           </motion.div>
@@ -389,8 +303,7 @@ function SelectedSidebar({
       <div className="pt-4 border-t border-white/10">
         <p className="text-xs text-gray-500 leading-relaxed">
           <Sparkles size={12} className="inline mr-1 text-purple-400" />
-          Grok uses provider prioritization, how audience segments the developence selocated
-          segments. Groks cards animate in with a staggered grid flew reveal.
+          Grok generated these segments based on your company profile and campaign goals.
         </p>
       </div>
     </motion.div>
@@ -400,9 +313,75 @@ function SelectedSidebar({
 // Main Page Component
 export default function SegmentsPage() {
   const router = useRouter();
-  const [segments] = useState<Segment[]>(mockSegments);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(["1", "2", "3", "5"]));
+  const [segments, setSegments] = useState<Segment[]>([]);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isLoading, setIsLoading] = useState(true);
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const generateAds = async () => {
+      try {
+        const companyName = localStorage.getItem("companyName");
+        const description = localStorage.getItem("companyDescription");
+        const goal = localStorage.getItem("campaignGoal");
+
+        if (!companyName || !description || !goal) {
+          setError("Missing company information. Please start from the beginning.");
+          setIsLoading(false);
+          return;
+        }
+
+        // Check if we already have ads data
+        const cachedData = localStorage.getItem("adsData");
+        if (cachedData && cachedData !== "null") {
+          const adsData: AdsData = JSON.parse(cachedData);
+          const transformedSegments: Segment[] = adsData.demographics.map((demo, index) => ({
+            ...demo,
+            id: String(index + 1),
+            color: colors[index % colors.length]
+          }));
+          setSegments(transformedSegments);
+          // Select all by default
+          setSelectedIds(new Set(transformedSegments.map((s) => s.id)));
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await fetch("/api/generate-ads", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({companyName, description, goal})
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to generate ads");
+        }
+
+        const adsData: AdsData = await response.json();
+
+        // Store the ads data
+        localStorage.setItem("adsData", JSON.stringify(adsData));
+
+        // Transform demographics into segments
+        const transformedSegments: Segment[] = adsData.demographics.map((demo, index) => ({
+          ...demo,
+          id: String(index + 1),
+          color: colors[index % colors.length]
+        }));
+
+        setSegments(transformedSegments);
+        // Select all by default
+        setSelectedIds(new Set(transformedSegments.map((s) => s.id)));
+      } catch (err: any) {
+        setError(err.message || "Failed to generate segments");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    generateAds();
+  }, []);
 
   const toggleSegment = (id: string) => {
     setSelectedIds((prev) => {
@@ -416,20 +395,77 @@ export default function SegmentsPage() {
     });
   };
 
-  const handleRegenerate = () => {
+  const handleRegenerate = async () => {
     setIsRegenerating(true);
-    setTimeout(() => {
+    localStorage.setItem("adsData", JSON.stringify(null));
+
+    try {
+      const companyName = localStorage.getItem("companyName");
+      const description = localStorage.getItem("companyDescription");
+      const goal = localStorage.getItem("campaignGoal");
+
+      const response = await fetch("/api/generate-ads", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({companyName, description, goal})
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to regenerate ads");
+      }
+
+      const adsData: AdsData = await response.json();
+      localStorage.setItem("adsData", JSON.stringify(adsData));
+
+      const transformedSegments: Segment[] = adsData.demographics.map((demo, index) => ({
+        ...demo,
+        id: String(index + 1),
+        color: colors[index % colors.length]
+      }));
+
+      setSegments(transformedSegments);
+      setSelectedIds(new Set(transformedSegments.map((s) => s.id)));
+    } catch (err: any) {
+      setError(err.message || "Failed to regenerate segments");
+    } finally {
       setIsRegenerating(false);
-    }, 2000);
+    }
   };
 
   const handleContinue = () => {
-    // Save selected segments
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedSegments", JSON.stringify(Array.from(selectedIds)));
     }
     router.push("/studio/ads");
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#030712] text-white flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="animate-spin h-12 w-12 text-cyan-400 mx-auto mb-4" />
+          <p className="text-gray-400 text-lg">Generating your audience segments...</p>
+          <p className="text-gray-500 text-sm mt-2">This may take a few moments</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#030712] text-white flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <p className="text-red-400 text-lg mb-4">{error}</p>
+          <button
+            onClick={() => router.push("/studio/company/name")}
+            className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 rounded-xl transition-colors"
+          >
+            Start Over
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#030712] text-white overflow-hidden">
@@ -543,4 +579,3 @@ export default function SegmentsPage() {
     </div>
   );
 }
-
