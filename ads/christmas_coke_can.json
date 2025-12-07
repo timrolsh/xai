@@ -1,0 +1,42 @@
+{
+  "product_slug_snake_case": "christmas_coke_can",
+  "product_context": "Coca-Cola, the iconic flavored soda brand, features a special Christmas-themed edition of their classic red can, often adorned with festive holiday designs like Santa Claus, snowflakes, polar bears, or Christmas trees, evoking warmth, joy, and celebration during the holiday season. This campaign highlights the product's role in holiday gatherings, family traditions, and festive refreshment.",
+  "demographics": [
+    {
+      "header": "Families Celebrating Christmas",
+      "age_range": "30-50",
+      "gender": "female",
+      "geolocation": "North America",
+      "instruction": "Create a heartwarming Christmas advertisement image featuring a cozy family living room with a decorated tree, stockings, and twinkling lights; in the foreground, show the festive Coca-Cola Christmas can sweating with condensation next to holiday treats like cookies and gingerbread; a mom pouring the soda into glasses for excited kids and spouse, warm golden lighting, joyful expressions, emphasizing holiday togetherness and refreshment.",
+      "tweet_text": "Gather the fam for Christmas magic! 🎄 Refresh with our festive Coke can. #CocaColaChristmas #HolidayJoy",
+      "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-a4ea23dd-8e51-4320-8be6-95942f42162f.png"
+    },
+    {
+      "header": "Young Holiday Party Enthusiasts",
+      "age_range": "18-29",
+      "gender": "female",
+      "geolocation": "global",
+      "instruction": "Generate a vibrant, fun Christmas party scene with young women in sparkly holiday outfits laughing and clinking glasses filled with fizzy Coca-Cola from the Christmas-themed can; background with fairy lights, balloons, wrapped gifts, and a snowy window view; dynamic composition, cool blue-red festive tones, bubbles rising from the soda, capturing excitement and festive vibes.",
+      "tweet_text": "Slay the holiday party szn! 🍾 Our Christmas Coke can brings the cheer. Who's toasting? #FestiveCoke #ChristmasVibes",
+      "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-388e4ed3-f6c7-4104-8cb9-a8ea8f37007f.png"
+    },
+    {
+      "header": "Festive Dads Hosting Gatherings",
+      "age_range": "30-50",
+      "gender": "male",
+      "geolocation": "Europe",
+      "instruction": "Illustrate a merry Christmas eve with a dad in a Santa hat grilling or setting the table outdoors under string lights, holding a chilled Christmas Coca-Cola can; kids playing nearby, wife smiling, snowy backdrop with chimney smoke; focus on the red can's holiday design glistening with ice, warm fire glow, conveying tradition, relaxation, and holiday refreshment.",
+      "tweet_text": "Dads, level up your Christmas hosting! 🔥 Ice-cold festive Coke awaits. #CokeChristmas #HolidayCheers",
+      "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-578cd247-8daa-44d1-b33e-641e4aad9957.png"
+    },
+    {
+      "header": "Santa-Loving Young Adults",
+      "age_range": "18-29",
+      "gender": "male",
+      "geolocation": "global",
+      "instruction": "Depict an energetic young man in casual winter gear toasting with a group of friends by a fireplace, prominently featuring the Coca-Cola Christmas can with Santa imagery; surrounded by snacks, games, and holiday decor like wreaths and ornaments; high-energy lighting with red and green hues, soda bubbles, fun and adventurous holiday spirit.",
+      "tweet_text": "Santa approved refreshment! 🎅 Grab our Christmas Coke can and celebrate. #CocaColaHoliday #XmasFun",
+      "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-a8b9d88a-06aa-46e6-8ad7-3412d305e1b0.png"
+    }
+  ]
+}

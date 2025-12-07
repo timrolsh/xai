@@ -18,3 +18,7 @@ export const AdsSchema = z.object({
     .min(3)
     .max(4)
 });
+
+export type AdsData = z.infer<typeof AdsSchema>;
+export type Demographic = AdsData['demographics'][number];
+

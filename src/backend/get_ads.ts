@@ -1,7 +1,7 @@
 import {generateObject} from "ai";
 import {xai} from "@ai-sdk/xai";
 import {AdsSchema} from "./ads_schema";
-import {system_prompt} from "../system_prompts";
+import {system_prompt} from "./system_prompts";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -11,31 +11,31 @@ export async function getAds(user_provided_product_information: string) {
       model: xai("grok-4-1-fast-non-reasoning"),
       schema: AdsSchema,
       prompt: system_prompt + user_provided_product_information,
-      temperature: 0.7,
+      temperature: 0.7
     })
   ).object;
-  
+
   const slug = system_prompt_result.product_slug_snake_case;
   let images = [];
-  
+
   for (let i = 0; i < system_prompt_result.demographics.length; i++) {
     const demographic = system_prompt_result.demographics[i];
     const image_generation_prompt = `Context of the product: ${system_prompt_result.product_context}, instruction: ${demographic.instruction}`;
     images.push(fetchGeneratedImageUrl(image_generation_prompt));
   }
-  
+
   images = await Promise.all(images);
-  
+
   for (let i = 0; i < images.length; i++) {
     // @ts-ignore
     system_prompt_result["demographics"][i]["image_url"] = images[i];
   }
-  
+
   // Use Node.js fs instead of Bun
   try {
     const adsDir = path.join(process.cwd(), "ads");
     if (!fs.existsSync(adsDir)) {
-      fs.mkdirSync(adsDir, { recursive: true });
+      fs.mkdirSync(adsDir, {recursive: true});
     }
     fs.writeFileSync(
       path.join(adsDir, `${slug}.json`),
@@ -45,7 +45,7 @@ export async function getAds(user_provided_product_information: string) {
     console.log("Could not write file (skipping):", error);
     // Don't fail if we can't write the file
   }
-  
+
   return system_prompt_result;
 }
 
@@ -70,3 +70,4 @@ export async function fetchGeneratedImageUrl(image_generation_prompt: string) {
   console.log(response);
   return response;
 }
+
