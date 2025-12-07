@@ -1,64 +1,82 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Search, Wand2, Rocket, AtSign } from "lucide-react";
+import { ArrowRight, Search, Wand2, Rocket, AtSign, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCompanyStore } from "@/lib/store/company-store";
 import { fadeInUp, staggerContainer } from "@/lib/utils/animations";
 import { AdCard } from "@/components/studio/ads/AdCard";
+import type { XPersonalizedAdsData } from "@/backend/x_personalized_ads_schema";
 
-// Mock User Data for specific handles
-const MOCK_X_USERS: Record<string, { name: string; role: string; avatar: string; interests: string[] }> = {
-  "elonmusk": {
-    name: "Elon Musk",
-    role: "Everything App",
-    avatar: "https://pbs.twimg.com/profile_images/1780044485541699584/p78MCn3B_400x400.jpg",
-    interests: ["Mars", "Memes", "Engineering"]
-  },
-  "satyanadella": {
-    name: "Satya Nadella",
-    role: "CEO at Microsoft",
-    avatar: "https://pbs.twimg.com/profile_images/1221837516816306177/_Ld4un5A_400x400.jpg",
-    interests: ["Cloud", "AI", "Accessibility"]
-  },
-  "default": {
-    name: "X User",
-    role: "Early Adopter",
-    avatar: "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png",
-    interests: ["Tech", "Startups", "Innovation"]
-  }
-};
+interface PersonalizedAdResult extends XPersonalizedAdsData {
+  image_url?: string;
+  x_user_info?: {
+    profile: {
+      name: string;
+      username: string;
+      description: string;
+      profile_image_url?: string;
+      verified?: boolean;
+    };
+  };
+}
 
 export default function PersonalizationPage() {
-  const { name, ads } = useCompanyStore();
+  const { name } = useCompanyStore();
   const [handle, setHandle] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedAd, setGeneratedAd] = useState<{ copy: string; user: typeof MOCK_X_USERS['default'] } | null>(null);
+  const [generatedAd, setGeneratedAd] = useState<PersonalizedAdResult | null>(null);
   const [isLaunched, setIsLaunched] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const baseAd = ads[0] || {
-    imageSrc: "https://images.unsplash.com/photo-1661956602116-aa6865609028?w=800&auto=format&fit=crop&q=60",
-  };
-
-  const handlePersonalize = () => {
-    if (!handle) return;
+  const handlePersonalize = async () => {
+    if (!handle.trim()) return;
+    
     setIsGenerating(true);
     setGeneratedAd(null);
+    setError(null);
 
-    // Simulate API call and generation
-    setTimeout(() => {
-      const cleanHandle = handle.replace('@', '').toLowerCase();
-      const user = MOCK_X_USERS[cleanHandle] || {
-        ...MOCK_X_USERS['default'],
-        name: `@${cleanHandle}`,
-      };
+    try {
+      // Get company info from store or localStorage (same pattern as segments page)
+      const companyName = name || localStorage.getItem("companyName");
+      const companyDescription = localStorage.getItem("companyDescription");
+      const campaignGoal = localStorage.getItem("campaignGoal");
 
-      const copy = `Hey @${cleanHandle}, noticed you're interested in ${user.interests[0]}. ${name} is the perfect tool to help you achieve more. 🚀 #AI`;
-      
-      setGeneratedAd({ copy, user });
+      if (!companyName || !companyDescription || !campaignGoal) {
+        setError("Missing company information. Please start from the beginning.");
+        setIsGenerating(false);
+        return;
+      }
+
+      // Clean the handle (remove @ if present)
+      const cleanHandle = handle.replace(/^@/, "");
+
+      // Call the API
+      const response = await fetch("/api/generate-personalized-ad", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          xHandle: cleanHandle,
+          companyName,
+          description: companyDescription,
+          goal: campaignGoal
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to generate personalized ad");
+      }
+
+      const result: PersonalizedAdResult = await response.json();
+      setGeneratedAd(result);
+    } catch (err: any) {
+      setError(err.message || "Failed to generate personalized ad");
+      console.error("Error generating personalized ad:", err);
+    } finally {
       setIsGenerating(false);
-    }, 1500);
+    }
   };
 
   const handleLaunch = () => {
@@ -149,6 +167,19 @@ export default function PersonalizationPage() {
           </div>
         </motion.div>
 
+        {/* Error Message */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-xl mx-auto w-full"
+          >
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+              <p className="text-red-600 dark:text-red-400 text-sm font-medium">{error}</p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Result Area */}
         <AnimatePresence mode="wait">
           {generatedAd && (
@@ -158,40 +189,22 @@ export default function PersonalizationPage() {
               exit={{ opacity: 0, y: -20 }}
               className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto"
             >
-              {/* User Context Card */}
+              {/* Product Context Card */}
               <div className="bg-white/40 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-2xl p-6 shadow-sm">
-                 <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Target Profile</h3>
-                 <div className="flex items-center gap-4 mb-6">
-                    <img 
-                      src={generatedAd.user.avatar} 
-                      alt={generatedAd.user.name} 
-                      className="w-16 h-16 rounded-full border-2 border-white/10"
-                    />
-                    <div>
-                      <div className="font-bold text-xl text-gray-900 dark:text-white">{generatedAd.user.name}</div>
-                      <div className="text-gray-500">{generatedAd.user.role}</div>
-                    </div>
-                 </div>
-                 <div className="space-y-2">
-                   <div className="text-sm text-gray-500">Detected Interests:</div>
-                   <div className="flex flex-wrap gap-2">
-                      {generatedAd.user.interests.map(i => (
-                        <span key={i} className="px-3 py-1 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
-                          {i}
-                        </span>
-                      ))}
-                   </div>
-                 </div>
+                 <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Product Context</h3>
+                 <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                   {generatedAd.product_context}
+                 </p>
               </div>
 
               {/* Ad Card */}
               <div className="space-y-6">
                  <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-0 md:text-right">Generated Creative</h3>
                  <AdCard
-                    name={name || "Company"}
-                    handle={(name || "company").toLowerCase().replace(/\s+/g, '')}
-                    content={generatedAd.copy}
-                    imageSrc={baseAd.imageSrc}
+                    name={name || localStorage.getItem("companyName") || "Company"}
+                    handle={(name || localStorage.getItem("companyName") || "company").toLowerCase().replace(/\s+/g, '')}
+                    content={generatedAd.tweet_text}
+                    imageSrc={generatedAd.image_url || "https://images.unsplash.com/photo-1661956602116-aa6865609028?w=800&auto=format&fit=crop&q=60"}
                     verified={true}
                     stats={{
                       replies: "0",
@@ -215,6 +228,23 @@ export default function PersonalizationPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Loading State */}
+        {isGenerating && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-xl mx-auto w-full text-center space-y-4 py-12"
+          >
+            <Loader2 className="animate-spin h-12 w-12 text-[#007AFF] mx-auto" />
+            <p className="text-gray-600 dark:text-gray-400">
+              Grok is analyzing {handle.replace(/^@/, "")}'s profile and generating a personalized ad...
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-500">
+              This may take a moment
+            </p>
+          </motion.div>
+        )}
 
       </div>
     </div>
